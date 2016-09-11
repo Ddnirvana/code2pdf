@@ -56,13 +56,17 @@ class Code2pdf:
             sys.exit(1)
 
         try:
-            with open(self.input_file, "r") as f:
-                content = f.read()
-                try:
-                    lexer = lexer or lexers.guess_lexer(content)
-                except pygments.util.ClassNotFound:
-                    # No lexer could be guessed.
-                    lexer = lexers.get_lexer_by_name("text")
+            input_files=self.input_file.split(':')
+            content=""
+            for si_file in input_files:
+                with open(si_file, "r") as f:
+                    content = content + "\n//file_name:"+si_file+"\n"
+                    content = content + f.read()
+                    try:
+                        lexer = lexer or lexers.guess_lexer(content)
+                    except pygments.util.ClassNotFound:
+                        # No lexer could be guessed.
+                        lexer = lexers.get_lexer_by_name("text")
         except EnvironmentError as exread:
             fmt = "\nUnable to read file: {}\n{}"
             logging.error(fmt.format(self.input_file, exread))
